@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -173,6 +174,41 @@ dishMapper.insert(dish);
                 .status(status )
                 .build();
         dishMapper.update(dish);
+    }
+
+    @Override
+    public List<DishVO> listWithFalvor(Dish dish) {
+        List<Dish> dishList=dishMapper.list(dish);
+        List <DishVO>dishVOList=new ArrayList<>();
+        for(Dish dish1:dishList){
+            DishVO dishVO=new DishVO();
+            BeanUtils.copyProperties(dish1,dishVO);
+            List<DishFlavor> flavors = dishFlavorMapper .getByDishId(dish1.getId());
+            dishVO.setFlavors(flavors );
+            dishVOList.add(dishVO);
+
+        }
+        return dishVOList;
+    }
+
+    /**
+     * 查询菜品和口味
+     * @param dish
+     * @return
+     */
+    @Override
+    public List<DishVO> listWithFlavor(Dish dish) {
+       List<Dish> dishList=dishMapper.list(dish);
+       List<DishVO> dishVOList=new ArrayList<>() ;
+       for (Dish dish1:dishList){
+           DishVO dishVO =new DishVO();
+           BeanUtils.copyProperties(dish1,dishVO);
+           //根据菜品Id查询对应的口味
+           List<DishFlavor > flavors =dishFlavorMapper .getByDishId(dish1.getId());
+           dishVO.setFlavors(flavors);
+           dishVOList .add(dishVO);
+       }
+       return dishVOList ;
     }
 
 }
