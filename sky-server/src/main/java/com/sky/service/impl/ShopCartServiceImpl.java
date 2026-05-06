@@ -73,4 +73,20 @@ public class ShopCartServiceImpl implements ShoppingCartService  {
            shoppingCartMapper.insert(shoppingCart);
         }
     }
+
+    /**
+     * 查看购物车
+     * @return
+     */
+    @Override
+    public List<ShoppingCart> showShoppingCart() {
+        //获取当前微信用户id
+        Long userId=BaseContext.getCurrentId();
+       ShoppingCart shoppingCart= ShoppingCart.builder()
+                       .userId(userId)
+                               .build();
+
+        List<ShoppingCart>list = shoppingCartMapper.list(shoppingCart );
+        return list;
+    }
 }
