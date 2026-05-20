@@ -26,6 +26,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.Address;
 import org.aspectj.bridge.Message;
@@ -36,6 +37,7 @@ import org.springframework.boot.web.reactive.filter.OrderedWebFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import springfox.bean.validators.plugins.schema.DecimalMinMaxAnnotationPlugin;
 import springfox.documentation.swagger.readers.operation.OpenApiResponseReader;
 
 import java.math.BigDecimal;
@@ -63,6 +65,10 @@ public class OrderServiceImpl implements OrderService {
     private String shopAddress;
     @Value("${sky.baidu.ak}")
     private String ak;
+    @Autowired
+    private WebSocketServer webSocketServer;
+    @Autowired
+    private DecimalMinMaxAnnotationPlugin decimalMinMaxAnnotationPlugin;
 
     /**
      * 用户下单
@@ -168,6 +174,13 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+        //通过websocket向客户端浏览器推送消息
+        Map map=new HashMap();
+        map.put("type",1);
+        map.put("orderId",ordersDB.getId());
+        map.put("content","订单号："+outTradeNo);
+        String json=JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
 
