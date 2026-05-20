@@ -427,6 +427,26 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
+    /**
+     * 客户催单
+     * @param id
+     */
+
+    @Override
+    public void reminder(Long id) {
+        //根据Id查询订单
+        Orders ordersDB=orderMapper.getById(id);
+        if(ordersDB==null){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        Map map=new HashMap();
+        map.put("type",2);
+        map.put("orderId",id);
+        map.put("content","订单号:"+ordersDB.getNumber());
+        //通过websocket向客户端浏览器推送消息
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+    }
+
 
     public List<OrderVO> getOrderVOList(Page<Orders> page){
         List<OrderVO> orderVOList=new ArrayList<>();
