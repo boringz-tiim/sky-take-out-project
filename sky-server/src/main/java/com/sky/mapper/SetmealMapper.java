@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 //注意mapper是接口！！
@@ -73,4 +74,8 @@ public interface SetmealMapper {
             "from setmeal_dish sd left join dish d on sd.dish_id = d.id\n" +
             "where sd.setmeal_id = #{setmealId} ")
     List<DishItemVO> getDishItemById(Long id);
+    /**
+     * 根据条件统计套餐数量
+     */
+    Integer countByMap(Map map);
 }
